@@ -17,38 +17,29 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 
-let currentPage = 'home';
+let currentPage = 'home', currentStock = [], currentSearch = "";
 const sheetGrades = ["A1008", "A1011", "A36", "5052", "6061", "304 #4", "304 2B", "Other"];
 const tubeShapes = ["Square", "Rectangle", "Round", "Angle", "Channel", "Bar"];
 
-const sidebar = document.getElementById('sidebar');
-const overlay = document.getElementById('sidebar-overlay');
-const matSelect = document.getElementById('mat-name');
-const inventoryList = document.getElementById('inventory-list');
+const sidebar = document.getElementById('sidebar'), overlay = document.getElementById('sidebar-overlay');
+const matSelect = document.getElementById('mat-name'), inventoryList = document.getElementById('inventory-list');
 
-// Sidebar Toggle
-const toggleNav = () => {
-    sidebar.classList.toggle('open');
-    overlay.classList.toggle('open');
-};
-
+const toggleNav = () => { sidebar.classList.toggle('open'); overlay.classList.toggle('open'); };
 document.getElementById('menu-toggle').onclick = toggleNav;
 document.getElementById('sidebar-overlay').onclick = toggleNav;
 document.getElementById('close-sidebar').onclick = toggleNav;
 
-// Dashboard Stats
 async function refreshStats() {
     try {
         const res = await fetch(`${SCRIPT_URL}?grade=SUMMARY_STATS&page=home`);
-        const stats = await res.json();
-        document.getElementById('stat-sheet-crop').innerText = stats.sheet_crop || 0;
-        document.getElementById('stat-struct-crop').innerText = stats.struct_crop || 0;
-        document.getElementById('stat-wip').innerText = stats.wip_parts || 0;
-        document.getElementById('stat-full').innerText = (stats.full_sheet + stats.full_struct) || 0;
-    } catch (e) { console.error("Stats Sync Error"); }
+        const s = await res.json();
+        document.getElementById('stat-sheet-crop').innerText = s.sheet_crop || 0;
+        document.getElementById('stat-struct-crop').innerText = s.struct_crop || 0;
+        document.getElementById('stat-wip').innerText = s.wip_parts || 0;
+        document.getElementById('stat-full').innerText = (s.full_sheet + s.full_struct) || 0;
+    } catch (e) { console.error("Stats Error"); }
 }
 
-// Navigation
 document.querySelectorAll('.nav-links li').forEach(link => {
     link.onclick = () => {
         if (window.innerWidth <= 1024) toggleNav();
@@ -57,7 +48,6 @@ document.querySelectorAll('.nav-links li').forEach(link => {
         link.classList.add('active');
         currentPage = page;
         document.getElementById('page-title').innerText = link.innerText;
-
         if (page === 'home') {
             document.getElementById('home-view').style.display = 'block';
             document.getElementById('main-terminal').style.display = 'none';
@@ -71,63 +61,63 @@ document.querySelectorAll('.nav-links li').forEach(link => {
 });
 
 function setupUI(page) {
+    const importZone = document.getElementById('wip-import-zone');
     if (page === 'wip_parts') {
+        importZone.style.display = 'block';
         matSelect.style.display = 'none';
-        setLabels("Workflow", "Part Number", "Job Number", "Quantity", "Initial Station", "Customer");
+        setLabels("Workflow", "Part #", "Job #", "Qty", "Station", "Customer");
         loadData("Master");
     } else {
+        importZone.style.display = 'none';
         matSelect.style.display = 'block';
-        if (page.includes('sheet')) {
-            updateSelect(matSelect, sheetGrades);
-            setLabels("Grade", "Thickness", "Size", "Cert #", "Location", "Notes");
-        } else {
-            updateSelect(matSelect, tubeShapes);
-            setLabels("Shape", "Dimensions", "Length", "Cert #", "Location", "Notes");
-        }
+        if (page.includes('sheet')) { updateSelect(matSelect, sheetGrades); setLabels("Grade", "Thickness", "Size", "Cert #", "Loc", "Notes"); }
+        else { updateSelect(matSelect, tubeShapes); setLabels("Shape", "Dims", "Length", "Cert #", "Loc", "Notes"); }
     }
 }
 
 function setLabels(g, d, l, c, loc, n) {
-    document.getElementById('label-grade').innerText = g;
-    document.getElementById('label-dim').innerText = d;
-    document.getElementById('label-len').innerText = l;
-    document.getElementById('label-cert').innerText = c;
-    document.getElementById('label-loc').innerText = loc;
-    document.getElementById('label-notes').innerText = n;
+    document.getElementById('label-grade').innerText = g; document.getElementById('label-dim').innerText = d;
+    document.getElementById('label-len').innerText = l; document.getElementById('label-cert').innerText = c;
+    document.getElementById('label-loc').innerText = loc; document.getElementById('label-notes').innerText = n;
 }
 
-function updateSelect(el, options) {
+function updateSelect(el, opts) {
     el.innerHTML = '<option value="" disabled selected>Select...</option>';
-    options.forEach(opt => { el.innerHTML += `<option value="${opt}">${opt}</option>`; });
+    opts.forEach(o => el.innerHTML += `<option value="${o}">${o}</option>`);
 }
 
 async function loadData(tab) {
     inventoryList.innerHTML = "<p>Syncing...</p>";
     try {
         const res = await fetch(`${SCRIPT_URL}?page=${currentPage}&grade=${tab}`);
-        const data = await res.json();
-        renderList(data);
-    } catch (e) { inventoryList.innerHTML = "<p>Sync Error. Verify Script Deployment.</p>"; }
+        currentStock = await res.json();
+        renderList(currentStock);
+    } catch (e) { inventoryList.innerHTML = "<p>Sync Error.</p>"; }
 }
 
 function renderList(items) {
     inventoryList.innerHTML = "";
-    items.forEach(item => {
+    const query = currentSearch.toLowerCase();
+    const filtered = items.filter(i => (i.id+i.size+i.cert+i.loc).toLowerCase().includes(query));
+    
+    filtered.forEach(item => {
         const div = document.createElement('div');
         div.className = "stock-item";
         const isWIP = currentPage === 'wip_parts';
         div.innerHTML = `
             <div style="flex:1;">
                 <strong>${item.id}</strong> | ${item.size}<br>
-                <small>${isWIP ? 'At: ' : 'Loc: '}${item.loc}</small>
+                <small>${isWIP?'At:':'Loc:'} ${item.loc} | Cert: ${item.cert}</small>
             </div>
-            <button class="${isWIP ? 'btn-move' : 'btn-use'}" onclick="${isWIP ? `window.movePart('${item.id}')` : `window.deleteItem('${item.id}', '${item.type}')`}" style="padding: 8px 12px; border-radius: 6px; border:none; cursor:pointer; background: ${isWIP ? '#ffedd5' : '#fee2e2'}; color: ${isWIP ? '#f97316' : '#dc2626'};">
-                ${isWIP ? 'MOVE' : 'USE'}
+            <button class="${isWIP?'btn-move':'btn-use'}" onclick="${isWIP?`window.movePart('${item.id}')`:`window.deleteItem('${item.id}','${item.type}')`}" style="padding:8px 12px; border-radius:6px; border:none; cursor:pointer; background:${isWIP?'#ffedd5':'#fee2e2'}; color:${isWIP?'#f97316':'#dc2626'}; font-weight:700;">
+                ${isWIP?'MOVE':'USE'}
             </button>
         `;
         inventoryList.appendChild(div);
     });
 }
+
+document.getElementById('inventory-search').oninput = (e) => { currentSearch = e.target.value; renderList(currentStock); };
 
 window.movePart = async (id) => {
     const next = prompt("Next Station:", "Welding");
@@ -144,36 +134,38 @@ window.deleteItem = async (id, tab) => {
 
 document.getElementById('material-form').onsubmit = async (e) => {
     e.preventDefault();
-    const btn = document.getElementById('submit-btn');
-    btn.innerText = "Syncing..."; btn.disabled = true;
+    const btn = document.getElementById('submit-btn'); btn.innerText = "Syncing..."; btn.disabled = true;
     const data = {
-        action: "ADD",
-        page: currentPage,
-        item: (currentPage === 'wip_parts') ? "Master" : matSelect.value,
-        id: document.getElementById('dim-input').value,
-        size: document.getElementById('len-input').value,
-        cert: document.getElementById('cert-num').value,
-        loc: document.getElementById('location').value,
+        action: "ADD", page: currentPage, item: (currentPage === 'wip_parts') ? "Master" : matSelect.value,
+        id: document.getElementById('dim-input').value, size: document.getElementById('len-input').value,
+        cert: document.getElementById('cert-num').value, loc: document.getElementById('location').value,
         type: (currentPage === 'wip_parts') ? document.getElementById('other-info').value : matSelect.value,
         user: auth.currentUser.email
     };
     await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) });
     document.getElementById('material-form').reset();
-    btn.innerText = "Sync to Database"; btn.disabled = false;
+    btn.innerText = "Sync Entry"; btn.disabled = false;
     loadData(data.item);
+};
+
+document.getElementById('wip-csv-input').onchange = async (e) => {
+    const file = e.target.files[0]; if (!file) return;
+    const reader = new FileReader();
+    reader.onload = async (ev) => {
+        const rows = ev.target.result.split("\n").filter(r => r.trim() !== "");
+        for (let row of rows) {
+            const [id, job, qty, cust, station] = row.split(",").map(i => i.trim());
+            await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: "ADD", page: "wip_parts", item: "Master", id, size: job, cert: qty, loc: station || "Laser Cut", type: cust, user: auth.currentUser.email }) });
+        }
+        alert("Import Complete"); loadData("Master");
+    };
+    reader.readAsText(file);
 };
 
 matSelect.onchange = (e) => loadData(e.target.value);
 onAuthStateChanged(auth, (user) => {
-    if (user) {
-        document.getElementById('auth-container').style.display = 'none';
-        document.getElementById('app-interface').style.display = 'block';
-        document.getElementById('user-display').innerText = user.displayName;
-        refreshStats();
-    } else {
-        document.getElementById('auth-container').style.display = 'flex';
-        document.getElementById('app-interface').style.display = 'none';
-    }
+    if (user) { document.getElementById('auth-container').style.display = 'none'; document.getElementById('app-interface').style.display = 'block'; document.getElementById('user-display').innerText = user.displayName; refreshStats(); }
+    else { document.getElementById('auth-container').style.display = 'flex'; document.getElementById('app-interface').style.display = 'none'; }
 });
 document.getElementById('login-btn').onclick = () => signInWithPopup(auth, provider);
 document.getElementById('logout-btn').onclick = () => signOut(auth);

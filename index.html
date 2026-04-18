@@ -13,20 +13,13 @@
 
         <nav class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <div class="logo-group">
-                    <div class="logo-accent"></div>
-                    <h1>LNI OPTIC</h1>
-                </div>
+                <div class="logo-group"><div class="logo-accent"></div><h1>LNI OPTIC</h1></div>
                 <button id="close-sidebar" class="mobile-close-btn">&times;</button>
             </div>
-            
             <div class="nav-section">
                 <label>Main</label>
-                <ul class="nav-links">
-                    <li class="active" data-page="home">Dashboard</li>
-                </ul>
+                <ul class="nav-links"><li class="active" data-page="home">Dashboard</li></ul>
             </div>
-
             <div class="nav-section">
                 <label>Inventory</label>
                 <ul class="nav-links">
@@ -36,23 +29,16 @@
                     <li data-page="full_struct">Full Structural</li>
                 </ul>
             </div>
-
             <div class="nav-section">
                 <label>Workflow</label>
-                <ul class="nav-links">
-                    <li data-page="wip_parts">Part Tracking</li>
-                </ul>
+                <ul class="nav-links"><li data-page="wip_parts">Part Tracking</li></ul>
             </div>
-
-            <div class="sidebar-footer">
-                <button id="logout-btn" class="btn-secondary">Sign Out</button>
-            </div>
+            <div class="sidebar-footer"><button id="logout-btn" class="btn-secondary">Sign Out</button></div>
         </nav>
 
         <main class="content-area">
             <div id="auth-container" class="auth-card">
                 <h1>LNI OPTIC</h1>
-                <p>Laser North Inventory & Workflow</p>
                 <button id="login-btn" class="btn-primary">Operator Sign-In</button>
             </div>
 
@@ -65,49 +51,38 @@
 
                 <div id="home-view">
                     <div class="stats-grid">
-                        <div class="stat-card">
-                            <span class="stat-label">Sheet Crops</span>
-                            <span id="stat-sheet-crop" class="stat-val">--</span>
-                        </div>
-                        <div class="stat-card">
-                            <span class="stat-label">Struct Crops</span>
-                            <span id="stat-struct-crop" class="stat-val">--</span>
-                        </div>
-                        <div class="stat-card highlight">
-                            <span class="stat-label">WIP Parts</span>
-                            <span id="stat-wip" class="stat-val">--</span>
-                        </div>
-                        <div class="stat-card">
-                            <span class="stat-label">Full Stock</span>
-                            <span id="stat-full" class="stat-val">--</span>
-                        </div>
+                        <div class="stat-card"><span class="stat-label">Sheet Crops</span><span id="stat-sheet-crop" class="stat-val">--</span></div>
+                        <div class="stat-card"><span class="stat-label">Struct Crops</span><span id="stat-struct-crop" class="stat-val">--</span></div>
+                        <div class="stat-card highlight"><span class="stat-label">WIP Parts</span><span id="stat-wip" class="stat-val">--</span></div>
+                        <div class="stat-card"><span class="stat-label">Full Stock</span><span id="stat-full" class="stat-val">--</span></div>
                     </div>
                 </div>
 
                 <div id="main-terminal" class="terminal-grid" style="display:none;">
                     <section class="card form-container">
                         <form id="material-form">
-                            <div class="field">
-                                <label id="label-grade">Category</label>
-                                <select id="mat-name"></select>
-                            </div>
+                            <div class="field"><label id="label-grade">Category</label><select id="mat-name"></select></div>
                             <div class="field-group">
                                 <div class="field"><label id="label-dim">DIM</label><input type="text" id="dim-input" required></div>
                                 <div class="field"><label id="label-len">SIZE</label><input type="text" id="len-input" required></div>
                             </div>
                             <div class="field-group">
-                                <div class="field"><label id="label-cert">CERT</label><input type="text" id="cert-num" required></div>
+                                <div class="field"><label id="label-cert">CERT #</label><input type="text" id="cert-num" required></div>
                                 <div class="field"><label id="label-loc">LOC</label><input type="text" id="location" required></div>
                             </div>
-                            <div class="field">
-                                <label id="label-notes">NOTES</label>
-                                <input type="text" id="other-info">
-                            </div>
-                            <button type="submit" id="submit-btn" class="btn-primary">Sync to Database</button>
+                            <div class="field"><label id="label-notes">NOTES</label><input type="text" id="other-info"></div>
+                            <button type="submit" id="submit-btn" class="btn-primary">Sync Entry</button>
                         </form>
+                        <div id="wip-import-zone" style="display:none; margin-top:1rem;">
+                            <label class="btn-secondary" style="display:block; text-align:center; cursor:pointer;">
+                                Import WIP CSV
+                                <input type="file" id="wip-csv-input" accept=".csv" style="display:none;">
+                            </label>
+                        </div>
                     </section>
                     
                     <section class="card list-container">
+                        <input type="text" id="inventory-search" placeholder="Search Part #, Cert, or Size..." class="search-bar">
                         <div id="inventory-list" class="item-feed"></div>
                     </section>
                 </div>
