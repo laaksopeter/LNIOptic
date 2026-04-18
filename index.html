@@ -43,16 +43,21 @@
                 <header class="top-nav">
                     <button id="menu-toggle" class="menu-btn">☰</button>
                     <h2 id="page-title">Dashboard</h2>
-                    <div class="user-pill"><span id="user-display">--</span></div>
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <button id="global-sync" class="sync-btn" title="Refresh Data">🔄</button>
+                        <div class="user-pill"><span id="user-display">--</span></div>
+                    </div>
                 </header>
+
                 <div id="home-view">
                     <div class="stats-grid">
-                        <div class="stat-card"><span class="stat-label">Sheet Crops</span><span id="stat-sheet-crop" class="stat-val">--</span></div>
-                        <div class="stat-card"><span class="stat-label">Struct Crops</span><span id="stat-struct-crop" class="stat-val">--</span></div>
-                        <div class="stat-card highlight"><span class="stat-label">WIP Parts</span><span id="stat-wip" class="stat-val">--</span></div>
-                        <div class="stat-card"><span class="stat-label">Full Stock</span><span id="stat-full" class="stat-val">--</span></div>
+                        <div class="stat-card" onclick="refreshStats()"><span class="stat-label">Sheet Crops</span><span id="stat-sheet-crop" class="stat-val">--</span></div>
+                        <div class="stat-card" onclick="refreshStats()"><span class="stat-label">Struct Crops</span><span id="stat-struct-crop" class="stat-val">--</span></div>
+                        <div class="stat-card highlight" onclick="refreshStats()"><span class="stat-label">WIP Parts</span><span id="stat-wip" class="stat-val">--</span></div>
+                        <div class="stat-card" onclick="refreshStats()"><span class="stat-label">Full Stock</span><span id="stat-full" class="stat-val">--</span></div>
                     </div>
                 </div>
+
                 <div id="main-terminal" class="terminal-grid" style="display:none;">
                     <section class="card form-container">
                         <form id="material-form">
@@ -66,12 +71,16 @@
                                 <div class="field"><label id="label-loc">LOC</label><input type="text" id="location" required></div>
                             </div>
                             <div class="field"><label id="label-notes">NOTES</label><input type="text" id="other-info"></div>
-                            <button type="submit" id="submit-btn" class="btn-primary">Sync Entry</button>
+                            <button type="submit" id="submit-btn" class="btn-primary">Enter</button>
                         </form>
-                        <div id="wip-import-zone" style="display:none; margin-top:1rem;">
-                            <label class="btn-secondary" style="display:block; text-align:center; cursor:pointer;">Import WIP CSV<input type="file" id="wip-csv-input" accept=".csv" style="display:none;"></label>
+                        <div id="bulk-import-zone" style="margin-top:1rem;">
+                            <label class="btn-secondary" style="display:block; text-align:center; cursor:pointer;">
+                                Bulk Import
+                                <input type="file" id="bulk-csv-input" accept=".csv" style="display:none;">
+                            </label>
                         </div>
                     </section>
+                    
                     <section class="card list-container">
                         <input type="text" id="inventory-search" placeholder="Search Part #, Cert, or Size..." class="search-bar">
                         <div id="inventory-list" class="item-feed"></div>

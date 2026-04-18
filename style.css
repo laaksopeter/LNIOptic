@@ -36,4 +36,27 @@ input, select { width: 100%; padding: 11px; border-radius: 8px; border: 1px soli
     .sidebar.open { transform: translateX(0); }
     .overlay.open { display: block; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 999; }
     .menu-btn, .mobile-close-btn { display: block; }
+    /* Add this to your existing style.css */
+
+.sync-btn {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px;
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: transform 0.2s;
+}
+
+.sync-btn:active {
+    transform: rotate(90deg);
+}
+
+.btn-primary.done-btn {
+    background: #22c55e;
+}
+
+.btn-primary.done-btn:hover {
+    background: #16a34a;
+}
 }
