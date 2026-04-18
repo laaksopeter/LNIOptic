@@ -34,17 +34,10 @@ input, select { width: 100%; padding: 11px; border-radius: 8px; border: 1px soli
 .auth-card #login-btn { font-size: 1.1rem; background: var(--primary); padding: 16px; border-radius: 12px; transition: all 0.3s ease; transform: translateY(0); margin-bottom: 2rem; }
 .auth-card #login-btn:hover { background: #ea6317; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(249, 115, 22, 0.25); }
 .auth-card .auth-notice { font-size: 0.75rem; color: var(--text-muted); margin-top: auto; font-weight: 500; }
-@media (max-width: 1024px) {
-    .terminal-grid { grid-template-columns: 1fr; }
-    .sidebar { position: fixed; left: 0; top: 0; bottom: 0; transform: translateX(-100%); }
-    .sidebar.open { transform: translateX(0); }
-    .overlay.open { display: block; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 999; }
-    .menu-btn, .mobile-close-btn { display: block; }
-    /* Add this to your existing style.css */
-
 .sync-btn { background: var(--primary); color: white; border: none; border-radius: 12px; padding: 8px 16px; cursor: pointer; font-size: 0.9rem; font-weight: 700; transition: all 0.3s ease; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
 .sync-btn:hover { background: #ea6317; box-shadow: 0 4px 8px rgba(249, 115, 22, 0.3); transform: translateY(-2px); }
 .sync-btn:active { transform: translateY(-1px); }
+@media (max-width: 1024px) {
 
 .btn-primary.done-btn {
     background: #22c55e;
