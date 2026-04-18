@@ -11,7 +11,7 @@ const firebaseConfig = {
   measurementId: "G-56VQD84RDZ"
 };
 
-const SCRIPT_URL = "PASTE_YOUR_NEW_DEPLOYMENT_URL_HERE";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxNSyOxtg79177XQSSZtI5w5zEHje0EOQHGag8KDAQXTLlj049xlvCm7UOtPDvRffUl/exec";
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
