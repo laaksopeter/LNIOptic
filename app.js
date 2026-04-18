@@ -11,7 +11,7 @@ const firebaseConfig = {
   measurementId: "G-56VQD84RDZ"
 };
 
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxNSyOxtg79177XQSSZtI5w5zEHje0EOQHGag8KDAQXTLlj049xlvCm7UOtPDvRffUl/exec";
+const SCRIPT_URL = "PASTE_YOUR_NEW_DEPLOYMENT_URL_HERE";
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
@@ -42,7 +42,7 @@ async function refreshStats() {
 
 document.querySelectorAll('.nav-links li').forEach(link => {
     link.onclick = () => {
-        if (window.innerWidth <= 1024) toggleNav();
+        if (window.innerWidth <= 1024 && sidebar.classList.contains('open')) toggleNav();
         const page = link.getAttribute('data-page');
         document.querySelectorAll('.nav-links li').forEach(l => l.classList.remove('active'));
         link.classList.add('active');
@@ -98,31 +98,19 @@ async function loadData(tab) {
 function renderList(items) {
     inventoryList.innerHTML = "";
     const query = currentSearch.toLowerCase();
-    const filtered = items.filter(i => (String(i.id) + String(i.size) + String(i.cert) + String(i.loc)).toLowerCase().includes(query));
+    const filtered = items.filter(i => (String(i.id)+String(i.size)+String(i.cert)+String(i.loc)).toLowerCase().includes(query));
     
     filtered.forEach(item => {
         const div = document.createElement('div');
         div.className = "stock-item";
         const isWIP = currentPage === 'wip_parts';
-        
         div.innerHTML = `
             <div style="flex:1;">
-                <strong style="color:var(--dark); font-size:1rem;">${item.id}</strong>
-                <div style="font-size:0.85rem; margin: 4px 0;">
-                    <span style="color:var(--text-muted); font-weight:600;">${isWIP ? 'Job #:' : 'Size:'}</span> ${item.size}
-                </div>
-                <div style="font-size:0.8rem;">
-                    <span style="color:var(--primary); font-weight:700;">LOC: ${item.loc}</span> | 
-                    <span style="font-weight:700;">${isWIP ? 'QTY:' : 'CERT:'} ${item.cert}</span>
-                </div>
-                <div style="font-size:0.7rem; color:var(--text-muted); margin-top:4px;">
-                    ${isWIP ? `Customer: ${item.type} | Updated: ${item.other}` : `Grade: ${item.type}`}
-                </div>
+                <strong>${item.id}</strong> | ${item.size}<br>
+                <small>${isWIP?'At:':'Loc:'} ${item.loc} | ${isWIP?'Qty:':'Cert:'} ${item.cert}</small>
             </div>
-            <button class="${isWIP ? 'btn-move' : 'btn-use'}" 
-                onclick="${isWIP ? `window.movePart('${item.id}')` : `window.deleteItem('${item.id}','${item.type}')`}" 
-                style="padding:10px 14px; border-radius:8px; border:none; cursor:pointer; font-weight:700; background:${isWIP ? '#ffedd5' : '#fee2e2'}; color:${isWIP ? '#f97316' : '#dc2626'};">
-                ${isWIP ? 'MOVE' : 'USE'}
+            <button class="${isWIP?'btn-move':'btn-use'}" onclick="${isWIP?`window.movePart('${item.id}')`:`window.deleteItem('${item.id}','${item.type}')`}" style="padding:10px; border-radius:8px; border:none; cursor:pointer; font-weight:700; background:${isWIP?'#ffedd5':'#fee2e2'}; color:${isWIP?'#f97316':'#dc2626'};">
+                ${isWIP?'MOVE':'USE'}
             </button>
         `;
         inventoryList.appendChild(div);
@@ -176,8 +164,8 @@ document.getElementById('wip-csv-input').onchange = async (e) => {
 
 matSelect.onchange = (e) => loadData(e.target.value);
 onAuthStateChanged(auth, (user) => {
-    if (user) { document.getElementById('auth-container').style.display = 'none'; document.getElementById('app-interface').style.display = 'block'; document.getElementById('user-display').innerText = user.displayName; refreshStats(); }
-    else { document.getElementById('auth-container').style.display = 'flex'; document.getElementById('app-interface').style.display = 'none'; }
+    if (user) { document.getElementById('auth-container').style.display = 'none'; document.getElementById('app-interface').style.display = 'block'; document.getElementById('sidebar').style.display = 'flex'; document.getElementById('user-display').innerText = user.displayName; refreshStats(); }
+    else { document.getElementById('auth-container').style.display = 'flex'; document.getElementById('app-interface').style.display = 'none'; document.getElementById('sidebar').style.display = 'none'; }
 });
 document.getElementById('login-btn').onclick = () => signInWithPopup(auth, provider);
-document.getElementById('logout-btn').onclick = () => signOut(auth);
+document.getElementById('logout-btn').onclick = () => { if(confirm("Sign Out?")) signOut(auth); };

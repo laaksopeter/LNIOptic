@@ -10,7 +10,6 @@
 <body>
     <div class="app-wrapper">
         <div id="sidebar-overlay" class="overlay"></div>
-
         <nav class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <div class="logo-group"><div class="logo-accent"></div><h1>LNI OPTIC</h1></div>
@@ -35,20 +34,17 @@
             </div>
             <div class="sidebar-footer"><button id="logout-btn" class="btn-secondary">Sign Out</button></div>
         </nav>
-
         <main class="content-area">
             <div id="auth-container" class="auth-card">
                 <h1>LNI OPTIC</h1>
                 <button id="login-btn" class="btn-primary">Operator Sign-In</button>
             </div>
-
             <div id="app-interface" style="display:none; width: 100%;">
                 <header class="top-nav">
                     <button id="menu-toggle" class="menu-btn">☰</button>
                     <h2 id="page-title">Dashboard</h2>
                     <div class="user-pill"><span id="user-display">--</span></div>
                 </header>
-
                 <div id="home-view">
                     <div class="stats-grid">
                         <div class="stat-card"><span class="stat-label">Sheet Crops</span><span id="stat-sheet-crop" class="stat-val">--</span></div>
@@ -57,7 +53,6 @@
                         <div class="stat-card"><span class="stat-label">Full Stock</span><span id="stat-full" class="stat-val">--</span></div>
                     </div>
                 </div>
-
                 <div id="main-terminal" class="terminal-grid" style="display:none;">
                     <section class="card form-container">
                         <form id="material-form">
@@ -74,13 +69,9 @@
                             <button type="submit" id="submit-btn" class="btn-primary">Sync Entry</button>
                         </form>
                         <div id="wip-import-zone" style="display:none; margin-top:1rem;">
-                            <label class="btn-secondary" style="display:block; text-align:center; cursor:pointer;">
-                                Import WIP CSV
-                                <input type="file" id="wip-csv-input" accept=".csv" style="display:none;">
-                            </label>
+                            <label class="btn-secondary" style="display:block; text-align:center; cursor:pointer;">Import WIP CSV<input type="file" id="wip-csv-input" accept=".csv" style="display:none;"></label>
                         </div>
                     </section>
-                    
                     <section class="card list-container">
                         <input type="text" id="inventory-search" placeholder="Search Part #, Cert, or Size..." class="search-bar">
                         <div id="inventory-list" class="item-feed"></div>

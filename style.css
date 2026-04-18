@@ -1,34 +1,35 @@
 :root { --primary: #f97316; --dark: #0f172a; --sidebar-bg: #020617; --border: #e2e8f0; --bg: #f8fafc; --text-muted: #64748b; }
-* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: 'Inter', sans-serif; background: var(--bg); height: 100vh; overflow: hidden; }
 .app-wrapper { display: flex; width: 100%; height: 100%; }
 .sidebar { width: 280px; background: var(--sidebar-bg); color: white; display: flex; flex-direction: column; padding: 2rem 1.5rem; transition: transform 0.3s ease; z-index: 1000; flex-shrink: 0; }
 .sidebar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
 .logo-group { display: flex; align-items: center; gap: 12px; }
 .logo-accent { width: 32px; height: 32px; background: var(--primary); border-radius: 8px; }
-.mobile-close-btn { display: none; background: none; border: none; color: white; font-size: 2.5rem; cursor: pointer; }
+.mobile-close-btn { display: none; background: none; border: none; color: white; font-size: 2.5rem; cursor: pointer; line-height: 1; }
 .nav-section { margin-bottom: 1.5rem; }
 .nav-section label { font-size: 0.7rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin: 0 0 8px 12px; display: block; }
 .nav-links { list-style: none; }
 .nav-links li { padding: 10px 16px; border-radius: 8px; margin-bottom: 4px; font-size: 0.9rem; font-weight: 600; cursor: pointer; color: #94a3b8; }
 .nav-links li.active { background: var(--primary); color: white; }
 .content-area { flex: 1; padding: 1.5rem; overflow-y: auto; }
-.top-nav { display: flex; justify-content: space-between; margin-bottom: 1.5rem; }
+.top-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
 .menu-btn { display: none; background: white; border: 1px solid var(--border); padding: 8px 12px; border-radius: 8px; cursor: pointer; }
 .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; }
 .stat-card { background: white; padding: 1.5rem; border-radius: 16px; border: 1px solid var(--border); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-.stat-val { font-size: 2.2rem; font-weight: 800; display: block; margin-top: 5px; }
+.stat-val { font-size: 2.2rem; font-weight: 800; display: block; margin-top: 5px; color: var(--dark); }
 .stat-card.highlight { border-top: 4px solid var(--primary); }
 .terminal-grid { display: grid; grid-template-columns: 350px 1fr; gap: 1.5rem; }
 .card { background: white; padding: 1.5rem; border-radius: 16px; border: 1px solid var(--border); }
 .field-group { display: flex; gap: 1rem; }
 .field { margin-bottom: 1rem; flex: 1; }
-.field label { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; display: block; margin-bottom: 4px; }
+.field label { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; display: block; margin-bottom: 4px; color: var(--dark); }
 input, select { width: 100%; padding: 11px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); }
 .btn-primary { width: 100%; padding: 15px; background: var(--dark); color: white; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; }
+.btn-secondary { width: 100%; padding: 10px; background: transparent; color: #94a3b8; border: 1.5px solid #1e293b; border-radius: 8px; font-weight: 700; cursor: pointer; margin-top: 10px; }
 .search-bar { width: 100%; padding: 12px; margin-bottom: 1rem; border: 2px solid var(--primary); border-radius: 8px; }
 .stock-item { display: flex; justify-content: space-between; align-items: center; padding: 1rem; border-bottom: 1px solid var(--border); }
-.auth-card { max-width: 400px; margin: 15vh auto; text-align: center; flex-direction: column; }
+.auth-card { max-width: 400px; margin: 15vh auto; text-align: center; }
 @media (max-width: 1024px) {
     .terminal-grid { grid-template-columns: 1fr; }
     .sidebar { position: fixed; left: 0; top: 0; bottom: 0; transform: translateX(-100%); }
