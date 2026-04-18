@@ -3,68 +3,113 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>LNI OPTIC</title>
+    <title>LNI OPTIC | Laser North</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="app-wrapper">
-        <div id="sidebar-overlay"></div>
+        <div id="sidebar-overlay" class="overlay"></div>
+
         <nav class="sidebar" id="sidebar">
-            <div class="nav-header">
-                <h1>LNI OPTIC</h1>
-                <button id="close-sidebar" class="mobile-only">&times;</button>
+            <div class="sidebar-header">
+                <div class="logo-group">
+                    <div class="logo-accent"></div>
+                    <h1>LNI OPTIC</h1>
+                </div>
+                <button id="close-sidebar" class="mobile-close">&times;</button>
             </div>
-            <ul class="nav-links">
-                <li class="active" data-page="home">Dashboard</li>
-                <hr>
-                <li data-page="sheet_crop">Sheet Cropper</li>
-                <li data-page="struct_crop">Structural Cropper</li>
-                <li data-page="full_sheet">Full Sheet Stock</li>
-                <li data-page="full_struct">Full Structural</li>
-                <hr>
-                <li data-page="wip_parts">Part Workflow</li>
-            </ul>
-            <button id="logout-btn" class="btn-logout">Sign Out</button>
+            
+            <div class="nav-section">
+                <label>Main</label>
+                <ul class="nav-links">
+                    <li class="active" data-page="home">Dashboard</li>
+                </ul>
+            </div>
+
+            <div class="nav-section">
+                <label>Inventory</label>
+                <ul class="nav-links">
+                    <li data-page="sheet_crop">Sheet Cropper</li>
+                    <li data-page="struct_crop">Structural Cropper</li>
+                    <li data-page="full_sheet">Full Sheet Stock</li>
+                    <li data-page="full_struct">Full Structural</li>
+                </ul>
+            </div>
+
+            <div class="nav-section">
+                <label>Workflow</label>
+                <ul class="nav-links">
+                    <li data-page="wip_parts">Part Tracking</li>
+                </ul>
+            </div>
+
+            <div class="sidebar-footer">
+                <button id="logout-btn" class="btn-secondary">Sign Out</button>
+            </div>
         </nav>
 
         <main class="content-area">
-            <div id="auth-container" class="card login-card">
-                <h2>LNI OPTIC</h2>
-                <button id="login-btn" class="google-signin">Operator Sign-In</button>
+            <div id="auth-container" class="auth-card">
+                <h1>LNI OPTIC</h1>
+                <p>Laser North Inventory & Workflow</p>
+                <button id="login-btn" class="btn-primary">Operator Sign-In</button>
             </div>
 
-            <div id="app-interface" style="display:none;">
-                <header class="top-bar">
-                    <button id="menu-toggle" class="mobile-only">☰</button>
+            <div id="app-interface" style="display:none; width: 100%;">
+                <header class="top-nav">
+                    <button id="menu-toggle" class="menu-btn">☰</button>
                     <h2 id="page-title">Dashboard</h2>
-                    <span id="user-display">Operator</span>
+                    <div class="user-pill"><span id="user-display">--</span></div>
                 </header>
 
                 <div id="home-view">
                     <div class="stats-grid">
-                        <div class="stat-card"><h3>Sheet Crops</h3><div id="stat-sheet-crop" class="stat-num">--</div></div>
-                        <div class="stat-card"><h3>Struct Crops</h3><div id="stat-struct-crop" class="stat-num">--</div></div>
-                        <div class="stat-card highlight"><h3>WIP Parts</h3><div id="stat-wip" class="stat-num">--</div></div>
-                        <div class="stat-card"><h3>Full Stock</h3><div id="stat-full" class="stat-num">--</div></div>
+                        <div class="stat-card">
+                            <span class="stat-label">Sheet Crops</span>
+                            <span id="stat-sheet-crop" class="stat-val">--</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-label">Struct Crops</span>
+                            <span id="stat-struct-crop" class="stat-val">--</span>
+                        </div>
+                        <div class="stat-card highlight">
+                            <span class="stat-label">WIP Parts</span>
+                            <span id="stat-wip" class="stat-val">--</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-label">Full Stock</span>
+                            <span id="stat-full" class="stat-val">--</span>
+                        </div>
                     </div>
                 </div>
 
-                <div id="main-terminal" class="terminal-layout" style="display:none;">
-                    <div class="card entry-pane">
+                <div id="main-terminal" class="terminal-grid" style="display:none;">
+                    <section class="card form-container">
                         <form id="material-form">
-                            <select id="mat-name" class="input-field"></select>
-                            <label id="label-dim">DIM</label><input type="text" id="dim-input" class="input-field" required>
-                            <label id="label-len">SIZE</label><input type="text" id="len-input" class="input-field" required>
-                            <label id="label-cert">CERT</label><input type="text" id="cert-num" class="input-field" required>
-                            <label id="label-loc">LOCATION</label><input type="text" id="location" class="input-field" required>
-                            <label id="label-notes">NOTES</label><input type="text" id="other-info" class="input-field">
-                            <button type="submit" id="submit-btn" class="btn-submit">Add Entry</button>
+                            <div class="field">
+                                <label id="label-grade">Category</label>
+                                <select id="mat-name"></select>
+                            </div>
+                            <div class="field-group">
+                                <div class="field"><label id="label-dim">DIM</label><input type="text" id="dim-input" required></div>
+                                <div class="field"><label id="label-len">SIZE</label><input type="text" id="len-input" required></div>
+                            </div>
+                            <div class="field-group">
+                                <div class="field"><label id="label-cert">CERT</label><input type="text" id="cert-num" required></div>
+                                <div class="field"><label id="label-loc">LOC</label><input type="text" id="location" required></div>
+                            </div>
+                            <div class="field">
+                                <label id="label-notes">NOTES</label>
+                                <input type="text" id="other-info">
+                            </div>
+                            <button type="submit" id="submit-btn" class="btn-primary">Sync to Database</button>
                         </form>
-                    </div>
-                    <div class="card list-pane">
-                        <div id="inventory-list"></div>
-                    </div>
+                    </section>
+                    
+                    <section class="card list-container">
+                        <div id="inventory-list" class="item-feed"></div>
+                    </section>
                 </div>
             </div>
         </main>

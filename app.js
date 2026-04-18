@@ -31,49 +31,50 @@ const shopStations = ["Laser Cut", "Forming", "Manual Machining", "CNC Machining
 // --- DOM ELEMENTS ---
 const sidebar = document.getElementById('sidebar');
 const overlay = document.getElementById('sidebar-overlay');
+const menuBtn = document.getElementById('menu-toggle');
+const closeBtn = document.getElementById('close-sidebar');
 const matSelect = document.getElementById('mat-name');
 const inventoryList = document.getElementById('inventory-list');
 const pageTitle = document.getElementById('page-title');
 
-// --- MOBILE NAVIGATION LOGIC ---
-const toggleSidebar = () => {
+// --- SIDEBAR NAVIGATION LOGIC ---
+const toggleNav = () => {
     sidebar.classList.toggle('open');
     overlay.classList.toggle('open');
 };
 
-document.getElementById('menu-toggle').onclick = toggleSidebar;
-document.getElementById('sidebar-overlay').onclick = toggleSidebar;
-document.getElementById('close-sidebar').onclick = toggleSidebar;
+if (menuBtn) menuBtn.onclick = toggleNav;
+if (overlay) overlay.onclick = toggleNav;
+if (closeBtn) closeBtn.onclick = toggleNav;
 
-// --- DASHBOARD STATS ---
+// --- DASHBOARD ANALYTICS ---
 async function refreshDashboardStats() {
     try {
         const res = await fetch(`${SCRIPT_URL}?grade=SUMMARY_STATS&page=home`);
         const stats = await res.json();
-        document.getElementById('stat-sheet-crop').innerText = stats.sheet_crop;
-        document.getElementById('stat-struct-crop').innerText = stats.struct_crop;
-        document.getElementById('stat-wip').innerText = stats.wip_parts;
-        document.getElementById('stat-full').innerText = (stats.full_sheet + stats.full_struct);
+        document.getElementById('stat-sheet-crop').innerText = stats.sheet_crop || 0;
+        document.getElementById('stat-struct-crop').innerText = stats.struct_crop || 0;
+        document.getElementById('stat-wip').innerText = stats.wip_parts || 0;
+        document.getElementById('stat-full').innerText = (stats.full_sheet + stats.full_struct) || 0;
     } catch (err) {
-        console.error("Dashboard Stats Sync Failed");
+        console.error("Dashboard Sync Error:", err);
     }
 }
 
-// --- NAVIGATION ROUTING ---
+// --- ROUTING HANDLER ---
 document.querySelectorAll('.nav-links li').forEach(link => {
     link.onclick = () => {
+        if (sidebar.classList.contains('open')) toggleNav();
+        
         const page = link.getAttribute('data-page');
         if (!page) return;
-
-        // Close sidebar on mobile after selection
-        if (window.innerWidth <= 900) toggleSidebar();
 
         document.querySelectorAll('.nav-links li').forEach(l => l.classList.remove('active'));
         link.classList.add('active');
         
         currentPage = page;
         pageTitle.innerText = link.innerText;
-        
+
         if (page === 'home') {
             document.getElementById('home-view').style.display = 'block';
             document.getElementById('main-terminal').style.display = 'none';
@@ -81,16 +82,16 @@ document.querySelectorAll('.nav-links li').forEach(link => {
         } else {
             document.getElementById('home-view').style.display = 'none';
             document.getElementById('main-terminal').style.display = 'grid';
-            setupForm(page);
+            setupUIForPage(page);
         }
     };
 });
 
-function setupForm(page) {
+function setupUIForPage(page) {
     inventoryList.innerHTML = "<p class='footer-note'>Select a category to view items.</p>";
     if (page === 'wip_parts') {
         matSelect.style.display = 'none';
-        setLabels("Workflow", "Part Number", "Job Number", "Quantity", "Current Station", "Customer");
+        setLabels("Workflow", "Part Number", "Job Number", "Quantity", "Initial Station", "Customer");
         loadData("Master");
     } else {
         matSelect.style.display = 'block';
@@ -118,15 +119,15 @@ function updateSelect(el, options) {
     options.forEach(opt => { el.innerHTML += `<option value="${opt}">${opt}</option>`; });
 }
 
-// --- DATA FETCHING & RENDERING ---
+// --- DATA FETCHING ---
 async function loadData(tabName) {
-    inventoryList.innerHTML = "<p class='footer-note'>Querying LNI Databases...</p>";
+    inventoryList.innerHTML = "<div class='loader'>Syncing LNI Database...</div>";
     try {
         const response = await fetch(`${SCRIPT_URL}?page=${currentPage}&grade=${tabName}`);
         currentStock = await response.json();
         renderInventory(currentStock);
     } catch (err) {
-        inventoryList.innerHTML = "<p class='footer-note'>Connection Error.</p>";
+        inventoryList.innerHTML = "<p class='error'>Sync Error. Verify Script Deployment URL.</p>";
     }
 }
 
@@ -141,19 +142,25 @@ function renderInventory(items) {
         
         div.innerHTML = `
             <div style="flex:1;">
-                <strong>${item.id}</strong> | ${isWIP ? 'Job: ' : ''}${item.size}<br>
-                <small>${isWIP ? 'Station: ' : 'Loc: '}${item.loc}</small><br>
-                <small style="color:var(--text-muted)">${isWIP ? 'Updated: ' : 'Cert: '}${isWIP ? item.other : item.cert}</small>
+                <div style="font-weight:800; color:var(--dark);">${item.id}</div>
+                <div style="font-size:0.85rem; color:var(--text-muted);">${isWIP ? 'Job: ' : ''}${item.size}</div>
+                <div style="font-size:0.75rem; margin-top:4px;">
+                    <span style="color:var(--primary); font-weight:700;">${isWIP ? 'At: ' : 'Loc: '}${item.loc}</span> | 
+                    <span>${isWIP ? 'Cust: ' : 'Cert: '}${item.type}</span>
+                </div>
+                ${isWIP ? `<div style="font-size:0.65rem; color:var(--text-muted); margin-top:2px;">Last Updated: ${item.other}</div>` : ''}
             </div>
-            <button class="${isWIP ? 'btn-move' : 'btn-use'}" onclick="${isWIP ? `window.movePart('${item.id}')` : `window.deleteItem('${item.id}', '${item.type}')`}">${isWIP ? 'MOVE' : 'USE'}</button>
+            <button class="${isWIP ? 'btn-move' : 'btn-use'}" onclick="${isWIP ? `window.movePart('${item.id}')` : `window.deleteItem('${item.id}', '${item.type}')`}" style="padding: 8px 12px; border-radius: 6px; font-weight:700; border:none; cursor:pointer; background: ${isWIP ? '#ffedd5' : '#fee2e2'}; color: ${isWIP ? '#f97316' : '#dc2626'};">
+                ${isWIP ? 'MOVE' : 'USE'}
+            </button>
         `;
         inventoryList.appendChild(div);
     });
 }
 
-// --- ACTIONS ---
+// --- GLOBAL ACTIONS ---
 window.movePart = async (id) => {
-    const next = prompt("Enter Next Station:", "Welding");
+    const next = prompt("Enter Next Station (Laser, Forming, Machining, Welding, Shipping):", "Welding");
     if (!next) return;
     await fetch(SCRIPT_URL, { 
         method: 'POST', 
@@ -164,7 +171,7 @@ window.movePart = async (id) => {
 };
 
 window.deleteItem = async (id, tab) => {
-    if (!confirm(`Permanently remove ${id}?`)) return;
+    if (!confirm(`Permanently remove item ${id}?`)) return;
     await fetch(SCRIPT_URL, { 
         method: 'POST', 
         mode: 'no-cors', 
@@ -177,25 +184,30 @@ window.deleteItem = async (id, tab) => {
 document.getElementById('material-form').onsubmit = async (e) => {
     e.preventDefault();
     const btn = document.getElementById('submit-btn');
-    btn.innerText = "Processing..."; btn.disabled = true;
+    btn.innerText = "Syncing..."; btn.disabled = true;
 
     const data = {
         action: "ADD",
         page: currentPage,
         item: (currentPage === 'wip_parts') ? "Master" : matSelect.value,
-        id: document.getElementById('dim-input').value, // Part # or Thickness
-        size: document.getElementById('len-input').value, // Job # or Size
+        id: document.getElementById('dim-input').value,
+        size: document.getElementById('len-input').value,
         thickness: (currentPage === 'wip_parts') ? "" : document.getElementById('dim-input').value,
         cert: document.getElementById('cert-num').value,
         loc: document.getElementById('location').value,
-        type: (currentPage === 'wip_parts') ? document.getElementById('other-info').value : matSelect.value, // Customer Name
+        type: (currentPage === 'wip_parts') ? (document.getElementById('other-info').value || "N/A") : matSelect.value,
         user: auth.currentUser.email
     };
 
-    await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) });
-    document.getElementById('material-form').reset();
-    btn.innerText = "Add Entry"; btn.disabled = false;
-    loadData(data.item);
+    try {
+        await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) });
+        document.getElementById('material-form').reset();
+        loadData(data.item);
+    } catch (err) {
+        alert("Sync Failed. Check internet connection.");
+    } finally {
+        btn.innerText = "Sync to Database"; btn.disabled = false;
+    }
 };
 
 matSelect.onchange = (e) => loadData(e.target.value);
@@ -209,7 +221,7 @@ onAuthStateChanged(auth, (user) => {
         document.getElementById('user-display').innerText = user.displayName;
         refreshDashboardStats();
     } else {
-        document.getElementById('auth-container').style.display = 'block';
+        document.getElementById('auth-container').style.display = 'flex';
         document.getElementById('sidebar').style.display = 'none';
         document.getElementById('app-interface').style.display = 'none';
     }
