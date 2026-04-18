@@ -98,19 +98,31 @@ async function loadData(tab) {
 function renderList(items) {
     inventoryList.innerHTML = "";
     const query = currentSearch.toLowerCase();
-    const filtered = items.filter(i => (i.id+i.size+i.cert+i.loc).toLowerCase().includes(query));
+    const filtered = items.filter(i => (String(i.id) + String(i.size) + String(i.cert) + String(i.loc)).toLowerCase().includes(query));
     
     filtered.forEach(item => {
         const div = document.createElement('div');
         div.className = "stock-item";
         const isWIP = currentPage === 'wip_parts';
+        
         div.innerHTML = `
             <div style="flex:1;">
-                <strong>${item.id}</strong> | ${item.size}<br>
-                <small>${isWIP?'At:':'Loc:'} ${item.loc} | Cert: ${item.cert}</small>
+                <strong style="color:var(--dark); font-size:1rem;">${item.id}</strong>
+                <div style="font-size:0.85rem; margin: 4px 0;">
+                    <span style="color:var(--text-muted); font-weight:600;">${isWIP ? 'Job #:' : 'Size:'}</span> ${item.size}
+                </div>
+                <div style="font-size:0.8rem;">
+                    <span style="color:var(--primary); font-weight:700;">LOC: ${item.loc}</span> | 
+                    <span style="font-weight:700;">${isWIP ? 'QTY:' : 'CERT:'} ${item.cert}</span>
+                </div>
+                <div style="font-size:0.7rem; color:var(--text-muted); margin-top:4px;">
+                    ${isWIP ? `Customer: ${item.type} | Updated: ${item.other}` : `Grade: ${item.type}`}
+                </div>
             </div>
-            <button class="${isWIP?'btn-move':'btn-use'}" onclick="${isWIP?`window.movePart('${item.id}')`:`window.deleteItem('${item.id}','${item.type}')`}" style="padding:8px 12px; border-radius:6px; border:none; cursor:pointer; background:${isWIP?'#ffedd5':'#fee2e2'}; color:${isWIP?'#f97316':'#dc2626'}; font-weight:700;">
-                ${isWIP?'MOVE':'USE'}
+            <button class="${isWIP ? 'btn-move' : 'btn-use'}" 
+                onclick="${isWIP ? `window.movePart('${item.id}')` : `window.deleteItem('${item.id}','${item.type}')`}" 
+                style="padding:10px 14px; border-radius:8px; border:none; cursor:pointer; font-weight:700; background:${isWIP ? '#ffedd5' : '#fee2e2'}; color:${isWIP ? '#f97316' : '#dc2626'};">
+                ${isWIP ? 'MOVE' : 'USE'}
             </button>
         `;
         inventoryList.appendChild(div);
