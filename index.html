@@ -2,17 +2,18 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>LNI OPTIC</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="app-wrapper">
-        <nav class="sidebar" id="sidebar" style="display:none;">
+        <div id="sidebar-overlay"></div>
+        <nav class="sidebar" id="sidebar">
             <div class="nav-header">
-                <div class="logo-accent"></div>
                 <h1>LNI OPTIC</h1>
+                <button id="close-sidebar" class="mobile-only">&times;</button>
             </div>
             <ul class="nav-links">
                 <li class="active" data-page="home">Dashboard</li>
@@ -24,7 +25,7 @@
                 <hr>
                 <li data-page="wip_parts">Part Workflow</li>
             </ul>
-            <button id="logout-btn" class="btn-logout">Exit Session</button>
+            <button id="logout-btn" class="btn-logout">Sign Out</button>
         </nav>
 
         <main class="content-area">
@@ -33,44 +34,35 @@
                 <button id="login-btn" class="google-signin">Operator Sign-In</button>
             </div>
 
-            <div id="app-interface" style="display:none; width: 100%;">
+            <div id="app-interface" style="display:none;">
                 <header class="top-bar">
+                    <button id="menu-toggle" class="mobile-only">☰</button>
                     <h2 id="page-title">Dashboard</h2>
                     <span id="user-display">Operator</span>
                 </header>
 
-                <div id="home-view" class="card">
-                    <h3>Welcome to LNI Optic</h3>
-                    <p>Select a category from the sidebar to manage inventory.</p>
+                <div id="home-view">
+                    <div class="stats-grid">
+                        <div class="stat-card"><h3>Sheet Crops</h3><div id="stat-sheet-crop" class="stat-num">--</div></div>
+                        <div class="stat-card"><h3>Struct Crops</h3><div id="stat-struct-crop" class="stat-num">--</div></div>
+                        <div class="stat-card highlight"><h3>WIP Parts</h3><div id="stat-wip" class="stat-num">--</div></div>
+                        <div class="stat-card"><h3>Full Stock</h3><div id="stat-full" class="stat-num">--</div></div>
+                    </div>
                 </div>
 
-                <div id="main-terminal" class="dashboard-grid" style="display:none;">
-                    <div class="card">
+                <div id="main-terminal" class="terminal-layout" style="display:none;">
+                    <div class="card entry-pane">
                         <form id="material-form">
-                            <div class="input-group">
-                                <label id="label-grade">Category</label>
-                                <select id="mat-name"></select>
-                            </div>
-                            <div class="input-group">
-                                <label id="label-dim">DIM</label>
-                                <input type="text" id="dim-input" required>
-                            </div>
-                            <div class="input-group">
-                                <label id="label-len">SIZE</label>
-                                <input type="text" id="len-input" required>
-                            </div>
-                            <div class="input-group">
-                                <label id="label-cert">CERT</label>
-                                <input type="text" id="cert-num" required>
-                            </div>
-                            <div class="input-group">
-                                <label id="label-loc">LOCATION</label>
-                                <input type="text" id="location" required>
-                            </div>
+                            <select id="mat-name" class="input-field"></select>
+                            <label id="label-dim">DIM</label><input type="text" id="dim-input" class="input-field" required>
+                            <label id="label-len">SIZE</label><input type="text" id="len-input" class="input-field" required>
+                            <label id="label-cert">CERT</label><input type="text" id="cert-num" class="input-field" required>
+                            <label id="label-loc">LOCATION</label><input type="text" id="location" class="input-field" required>
+                            <label id="label-notes">NOTES</label><input type="text" id="other-info" class="input-field">
                             <button type="submit" id="submit-btn" class="btn-submit">Add Entry</button>
                         </form>
                     </div>
-                    <div class="card">
+                    <div class="card list-pane">
                         <div id="inventory-list"></div>
                     </div>
                 </div>
