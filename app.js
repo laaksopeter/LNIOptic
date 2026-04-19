@@ -37,7 +37,8 @@ async function refreshStats() {
         document.getElementById('stat-sheet-crop').innerText = s.sheet_crop || 0;
         document.getElementById('stat-struct-crop').innerText = s.struct_crop || 0;
         document.getElementById('stat-wip').innerText = s.wip_parts || 0;
-        document.getElementById('stat-full').innerText = (s.full_sheet + s.full_struct) || 0;
+        document.getElementById('stat-full-sheet').innerText = s.full_sheet || 0;
+        document.getElementById('stat-full-struct').innerText = s.full_struct || 0;
     } catch (e) { console.error("Stats Error"); }
 }
 
